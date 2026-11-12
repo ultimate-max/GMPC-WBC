@@ -1,0 +1,57 @@
+{
+  "source_commit": "725b59b6de39a26c425632120c89f23c49a36f1e",
+  "nq": 25,
+  "nv": 24,
+  "actuated_joints": 18,
+  "mass_kg": 78.99902026000422,
+  "mount": {
+    "mount_xyz": [
+      0.0,
+      0.0,
+      0.12
+    ],
+    "mount_rpy": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "note": "Assumed simulation mount relative to B2 base_link; not a measured hardware installation.",
+    "arm_home": [
+      0.0,
+      1.0,
+      -1.5,
+      0.5,
+      0.0,
+      0.0
+    ],
+    "leg_home": [
+      0.0,
+      0.7,
+      -1.4
+    ]
+  },
+  "joint_names": [
+    "universe",
+    "root_joint",
+    "FL_hip_joint",
+    "FL_thigh_joint",
+    "FL_calf_joint",
+    "FR_hip_joint",
+    "FR_thigh_joint",
+    "FR_calf_joint",
+    "RL_hip_joint",
+    "RL_thigh_joint",
+    "RL_calf_joint",
+    "RR_hip_joint",
+    "RR_thigh_joint",
+    "RR_calf_joint",
+    "z1_joint1",
+    "z1_joint2",
+    "z1_joint3",
+    "z1_joint4",
+    "z1_joint5",
+    "z1_joint6"
+  ],
+  "base_height": 0.5353895310991419,
+  "tool_tip": "virtual point 0.051 m along z1_link06 local x; no gripper mass"
+}

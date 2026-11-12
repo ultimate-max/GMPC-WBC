@@ -1,0 +1,16 @@
+name: b2z1_mpc
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pinocchio=3.8.0
+  - eigen
+  - cmake
+  - ninja
+  - cxx-compiler
+  - pip
+  - pip:
+      - mujoco==4.0.0
+      - matplotlib==3.11.2
+      - imageio==2.38.1
+      - imageio-ffmpeg==0.8.1
