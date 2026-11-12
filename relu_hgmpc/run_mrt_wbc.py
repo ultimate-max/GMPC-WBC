@@ -10,7 +10,7 @@ import pinocchio as pin
 import native
 from strict_gmpc import StrictGMPC
 from model import equilibrium
-from run_buffered_wbc import DenseTarget,physical_cores,stats
+from runtime_support import DenseTarget,physical_cores,stats
 from native_runtime_support import kernel_inputs,publish
 from geometric_wbc import pose
 

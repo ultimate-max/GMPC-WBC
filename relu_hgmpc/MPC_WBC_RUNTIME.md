@@ -2,7 +2,7 @@
 
 2026-11-12，工程：`/home/ganhe/project/b2z1_mpc`。
 
-本次参考 `/home/ganhe/project/legged_control_ros2` 的控制器结构重构执行层，没有替换几何控制问题。入口为 `run_mpc_wbc.sh`，原 Python 双线程实验保留在 `relu_hgmpc/run_buffered_wbc.py`，供诊断复现。
+本次参考 `/home/ganhe/project/legged_control_ros2` 的控制器结构重构执行层，没有替换几何控制问题。入口为 `run_mpc_wbc.sh`，原 Python 双线程实验已归档至 `archive/retired_2026-11-12.tar.gz`，公共目标与统计函数位于 `relu_hgmpc/runtime_support.py`。
 
 ## 运行
 
@@ -16,7 +16,7 @@ bash run_mpc_wbc.sh --name my_unified --wbc-mode unified --duration 12
 
 ## 对照参考工程后做出的修改
 
-参考依据是 `src/legged_controllers/src/LeggedController.cpp`：`on_activate()` 等待首条策略，`update()` 更新观测、切换策略并按观测时间执行 `evaluatePolicy()`，`setupMrt()` 用独立线程运行 `advanceMpc()`。参考控制器传入 WBC 的是名义状态、输入和接触模式；其质心模型和任务定义与本工程不同，未直接替换为该算法。当前参考目录内没有 OCS2 MRT 底层实现文件，因此这里只依据可见的调用链重构，不声称复制了其内部锁实现。
+参考依据是 `src/legged_controllers/src/LeggedController.cpp`：`on_activate()` 等待首条策略，`update()` 更新观测、切换策略并按观测时间执行 `evaluatePolicy()`，`setupMrt()` 用独立线程运行 `advanceMpc()`。参考控制器传入 WBC 的是名义状态、输入和接触模式；其质心模型和任务定义与本工程不同，未直接替换为该算法。本次执行框架重构依据参考工程的调用链，不声称复制了其内部锁实现。随后已补齐参考工程锁定的 OCS2 子模块，下一阶段将直接复用其完整行走链路。
 
 现在的数据通路是：
 

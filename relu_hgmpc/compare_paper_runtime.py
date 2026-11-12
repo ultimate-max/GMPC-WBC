@@ -7,7 +7,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import native
-from run_buffered_wbc import DenseTarget
+from runtime_support import DenseTarget
 from geometric_wbc import pose
 
 root=pathlib.Path(__file__).resolve().parents[1];out=root/'results/paper_comparison';native_dir=root/'results/buffered_wbc'

@@ -177,7 +177,7 @@ def main():
         '高频指标来自 1 kHz 实际关节速度和施加力矩。报告同时保留 5–100 Hz、10–100 Hz、实际速度差分加速度 RMS 与力矩变化率；安静窗口 8–12 s 排除了外力脉冲，完整 2–12 s 窗口含扰动响应，不能全部解释成周期抖振。','',
         '## 调试发现与复现','',
         '直接在交接时重置到实测 q/v，会把执行滞后变成参考加速度尖峰；只有位姿和速度连续并不足够。另一问题是末端误差较小不能排除机械臂关节偏离参考。仅增加重规划次数未消除后者，需要三策略共同的执行偏差约束。相关失败结果保存在 diagnostics，这些修复不能计作触发调度算法单独带来的收益。',
-        '源代码：/home/ganhe/project/b2z1_mpc/relu_hgmpc。运行 env.sh 后执行 test_online_wbc_mpc.py、benchmark_online_wbc_mpc.py、report_online_wbc_mpc.py。原始数据、协议、源码和目标轨迹哈希：results/online_wbc_mpc。原 native.cpp 和 geometric_wbc.py 已备份至 relu_hgmpc/backup_before_online。']
+        '源代码：/home/ganhe/project/b2z1_mpc/relu_hgmpc。运行 env.sh 后执行 test_online_wbc_mpc.py、benchmark_online_wbc_mpc.py、report_online_wbc_mpc.py。原始数据、协议、源码和目标轨迹哈希：results/online_wbc_mpc。原 native.cpp 和 geometric_wbc.py 的旧备份已归档至 archive/retired_2026-11-12.tar.gz。']
     (OUT/'RESULTS.md').write_text('\n'.join(lines),encoding='utf-8')
     print(json.dumps(clean(dict(complete=result['complete_runs'],means=means,changes=comparisons)),indent=2))
 

@@ -1,3 +1,9 @@
+# B2 与 Z1 层级 GMPC 加几何 WBC
+
+当前维护入口为 `bash run_mpc_wbc.sh --name my_run --case normal`，构建命令为 `bash relu_hgmpc/build.sh`。执行框架与验证口径见 [MPC_WBC_RUNTIME.md](relu_hgmpc/MPC_WBC_RUNTIME.md)。当前可验证的是四足支撑下的机械臂与本体协同；行走阶段将复用 `/home/ganhe/project/legged_control_ros2` 的完整行走链路。
+
+2026 年 11 月 12 日已清理一次性源码改写脚本、散落备份、旧 Python 缓冲运行入口和已放弃的爬行原型，原生核心恢复到此前验证过的站立版本。清理清单和恢复入口见 [CLEANUP.md](CLEANUP.md)。论文基线、ADMM/ReLU-QP/OSQP 实验与原始结果保留，下面为历史实验说明，不能当作当前默认入口。
+
 ## acados/SQP-RTI reproduction status
 
 The nonlinear acados implementation is in [paper_repro](paper_repro/README.md). The damped distributed profile now passes three 12-second runs, a serial comparison, and a 60-second closed-loop simulation. It uses ten coordination rounds, primal step 0.2, and dual step 0.05. The single-full-step paper reproduction still fails; no reproduction of the paper's speedup is claimed. Read [the current interface/ADMM audit and results](results/interface_audit/RESULTS.md). The earlier [failure report](results/paper_repro/REPORT.md) and the OSQP prototype below are retained separately.

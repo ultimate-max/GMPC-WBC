@@ -3,7 +3,7 @@ import json,pathlib,time,sys
 import numpy as np
 import native
 from model import equilibrium
-from run_buffered_wbc import DenseTarget,physical_cores
+from runtime_support import DenseTarget,physical_cores
 from strict_gmpc import StrictGMPC
 from native_runtime_support import kernel_inputs,publish
 root=pathlib.Path(__file__).resolve().parents[1]

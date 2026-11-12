@@ -11,7 +11,7 @@ import native
 from prioritized import PrioritizedController
 from paper_anchor_baseline import EEReference
 from geometric_wbc import rolling_contact
-from run_buffered_wbc import DenseTarget,physical_cores,stats
+from runtime_support import DenseTarget,physical_cores,stats
 
 class Paper50(PrioritizedController):
     def __init__(self,*args,**kwargs):
@@ -65,7 +65,7 @@ def main():
         full_deadline_miss_fraction=float(np.mean([r['start_lateness_ms']+r['full_loop_ms']>2.5 for r in rows])),
         settings=dict(allocator_hz=50,wbc_hz=400,servo_hz=2000,activation_mode=ctrl.activation_mode,task_dim=6),
         scope='Existing B2+Z1 6D paper adaptation, not author code. Original adapted WBC has floating-base acceleration correction; it does not share the GMPC task/constraint set. Same external EE target, plant, actuator and clock. Python baseline versus native WBC: no algorithmic speedup attribution.',
-        source_sha256={name:hashlib.sha256((root/'relu_hgmpc'/name).read_bytes()).hexdigest() for name in ('run_paper_matched.py','prioritized.py','paper_anchor_baseline.py','run_buffered_wbc.py')})
+        source_sha256={name:hashlib.sha256((root/'relu_hgmpc'/name).read_bytes()).hexdigest() for name in ('run_paper_matched.py','prioritized.py','paper_anchor_baseline.py','runtime_support.py')})
     assert result['allocations']==result['expected_allocation_calls'],result
     for key in ('control_ms','full_loop_ms','response_ms'):result[key]=stats([r[key] for r in rows])
     (out/f'{args.name}.json').write_text(json.dumps(result,indent=2));print(json.dumps(result,indent=2),flush=True)

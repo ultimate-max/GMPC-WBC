@@ -22,7 +22,7 @@ for _ in range(10):
     errs.extend(float(np.max(abs(a-b))) for a,b in zip(explicit,simplified))
 assert max(errs)<1e-12
 # Refactoring SNS into allocate() must preserve the original complete control.
-spec=importlib.util.spec_from_file_location('old_paper',root/'relu_hgmpc/prioritized.pre_anchor.py')
+spec=importlib.util.spec_from_file_location('old_paper',root/'relu_hgmpc/tests/fixtures/prioritized.pre_anchor.py')
 old=importlib.util.module_from_spec(spec);spec.loader.exec_module(old)
 c0=old.PrioritizedController(p,EEReference(target),task_dim=6)
 c1=PrioritizedController(p,EEReference(target),task_dim=6)
@@ -32,7 +32,7 @@ for t in (0.,.02,.04):
     baseline.append(max(float(np.max(abs(x-y))) for x,y in zip(a,b)))
 assert max(baseline)<1e-12
 # Default WBC task order remains unchanged for existing experiments.
-spec=importlib.util.spec_from_file_location('old_wbc',root/'relu_hgmpc/geometric_wbc.pre_anchor.py')
+spec=importlib.util.spec_from_file_location('old_wbc',root/'relu_hgmpc/tests/fixtures/geometric_wbc.pre_anchor.py')
 oldw=importlib.util.module_from_spec(spec);spec.loader.exec_module(oldw)
 from geometric_wbc import GeometricWBC
 w0=oldw.GeometricWBC(p,'se3');w1=GeometricWBC(p,'se3');legacy=[]

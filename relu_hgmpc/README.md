@@ -1,5 +1,9 @@
 # B2+Z1: ReLU-QP MPC 与优先级 GMPC
 
+## 当前入口
+
+运行项目根目录的 `run_mpc_wbc.sh`，进入 `run_mrt_wbc.py` 的 MPC 生产者和原生 C++ WBC 消费者。公共实验支持函数位于 `runtime_support.py`。详见 [MPC_WBC_RUNTIME.md](MPC_WBC_RUNTIME.md) 和 [清理记录](../CLEANUP.md)。以下各节保留历史实验的条件与结论。
+
 ## 共用几何 WBC 的严格对照（2026-11-11）
 
 新增统一接口对照见 [SHARED_GEOMETRIC_WBC.md](SHARED_GEOMETRIC_WBC.md)，结果在 `../results/shared_geometric_wbc/RESULTS.md`。运动分配适配基线与严格层级 GMPC 共用 SE(3) WBC、完整任务目标、优先级、物理边界、参考拼接与关节伺服。基线是当前目标的优先级微分逆运动学适配，不是原论文 SNS 算法原样复现；原实现仍保留。
@@ -7,9 +11,9 @@
 固定逻辑 50 Hz 的普通／双幅结果显示跟踪更准、机械臂实际速度高频量下降，但力矩与腿部指标不是全面改善，总 CPU 更高。实际多线程尚未稳定达到 50 Hz；扰动仍有失败，原始记录、残差、计时和失败诊断均保留。因此本轮不宣称已同时实现精度、抖振与计算效率的全面优势。
 
 
-## 当前双线程 MPC＋几何 WBC（2026-11-11）
+## 历史 Python 双线程 MPC＋几何 WBC（2026-11-11）
 
-最新入口 `run_threaded_online_mpc.py` 默认使用实际 MPC 工作线程、独立动力学数据和活跃面预测＋筛选 OSQP；主线程执行 200 Hz 几何 WBC。目标规划频率 50 Hz，实际迟到与跳槽显式统计。C++ 负责等价矩阵构造和几何参考，计算时释放 Python 执行锁。实现与复现见 [THREADED_MPC.md](THREADED_MPC.md)，完整对照见 `../results/online_wbc_mpc_threads/RESULTS.md`。
+该历史实验入口 `run_threaded_online_mpc.py` 默认使用实际 MPC 工作线程、独立动力学数据和活跃面预测＋筛选 OSQP；主线程执行 200 Hz 几何 WBC。目标规划频率 50 Hz，实际迟到与跳槽显式统计。C++ 负责等价矩阵构造和几何参考，计算时释放 Python 执行锁。实现与复现见 [THREADED_MPC.md](THREADED_MPC.md)，完整对照见 `../results/online_wbc_mpc_threads/RESULTS.md`。
 
 最终 18 次完整闭环均保持四足接触、无力矩裁剪。加速组合相对双线程 quadprog 总控制 CPU 时间减少约 19%，末端位置 RMSE 变化小于 0.04%。加速版 3597 次规划中 6 次超过 20 ms，并跳过 3 个请求槽；WBC 超过 5 ms 为 55/14400 次，尚未满足所有周期均准时的实时验收。实际关节高频指标没有整体改善。
 
@@ -17,7 +21,7 @@
 
 ## 在线 MPC＋几何 WBC：最低 50 Hz（2026-11-11）
 
-当前在线规划入口 `run_online_wbc_mpc.py` 默认采用 50 Hz MPC、200 Hz WBC、20 ms 逻辑交接延迟。预测节点仍为 40 ms、10 个节点、0.4 s 时域。MPC 是更新实测模型的单次线性化参考生成器，几何 WBC 使用严格任务层级；不是下方旧层级 GMPC 原封不动提高频率。
+该历史在线规划入口 `run_online_wbc_mpc.py` 默认采用 50 Hz MPC、200 Hz WBC、20 ms 逻辑交接延迟。预测节点仍为 40 ms、10 个节点、0.4 s 时域。MPC 是更新实测模型的单次线性化参考生成器，几何 WBC 使用严格任务层级；不是下方旧层级 GMPC 原封不动提高频率。
 
 普通、双幅和 120 N 外力扰动各重复两次，6 次 50 Hz 闭环及 6 次相同延迟的历史 10 Hz 对照全部完成，每次 12 s。50 Hz 共 3600 次规划、每次包含矩阵与参考构造的平均耗时约 10.2–10.5 ms、最慢 18.27 ms；全程保持四足接触、无力矩裁剪。双幅工况末端位置 RMSE 从 10 Hz 的 2.23 mm 降至 1.65 mm，总在线计算增加约 86%。
 

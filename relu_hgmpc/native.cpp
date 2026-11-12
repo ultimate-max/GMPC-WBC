@@ -39,10 +39,7 @@ struct Plant {
     out["J"]=J;out["jdotv"]=Vec(pinocchio::getFrameAcceleration(model,*d,id,pinocchio::LOCAL).toVector());
     out["pose"]=Mat(d->oMf[id].toHomogeneousMatrix());out["tau_max"]=s.torque_limit;
     out["v_max"]=s.velocity_limit;out["q_min"]=Vec(model.lowerPositionLimit.tail(18));
-    out["q_max"]=Vec(model.upperPositionLimit.tail(18));
-    Mat Jf=Mat::Zero(12,24);Vec fdot=Vec::Zero(12);const char* feet[]={"FL_foot","FR_foot","RL_foot","RR_foot"};
-    for(int i=0;i<4;++i){auto fi=model.getFrameId(feet[i]);Mat j=Mat::Zero(6,24);pinocchio::getFrameJacobian(model,*d,fi,pinocchio::LOCAL_WORLD_ALIGNED,j);Jf.middleRows(3*i,3)=j.topRows(3);fdot.segment(3*i,3)=pinocchio::getFrameClassicalAcceleration(model,*d,fi,pinocchio::LOCAL_WORLD_ALIGNED).linear();}
-    out["Jf"]=Jf;out["fdot"]=fdot;return out;
+    out["q_max"]=Vec(model.upperPositionLimit.tail(18));return out;
   }
   py::dict truth() {sim.read(robot);auto r=evaluate(robot.q,robot.v);r["contacts"]=sim.stanceContacts();return r;}
   void set_timestep(double dt) {
@@ -175,7 +172,6 @@ PYBIND11_MODULE(native,m) {
   py::class_<ControlRuntime>(m,"ControlRuntime")
     .def(py::init<const std::string&,const std::string&,const std::string&,const std::string&,const Vec&,double,bool,bool>())
     .def("publish",&ControlRuntime::publish)
-    .def("set_gait",&ControlRuntime::setGait)
     .def("observation",&ControlRuntime::observation)
     .def("start",&ControlRuntime::start)
     .def("running",&ControlRuntime::running)
@@ -189,10 +185,8 @@ PYBIND11_MODULE(native,m) {
       s.q=ss["q"].cast<Vec>();s.v=ss["v"].cast<Vec>();s.M=ss["M"].cast<Mat>();s.h=ss["h"].cast<Vec>();
       s.Jc=ss["Jc"].cast<Mat>();s.cdot=ss["cdotv"].cast<Vec>();s.ce=ss["ce"].cast<Vec>();s.J=ss["J"].cast<Mat>();s.jdot=ss["jdotv"].cast<Vec>();s.pose=ss["pose"].cast<Mat>();
       s.qmin=ss["q_min"].cast<Vec>();s.qmax=ss["q_max"].cast<Vec>();s.vmax=ss["v_max"].cast<Vec>();s.taumax=ss["tau_max"].cast<Vec>();
-      if(ss.contains("Jf")){s.Jf=ss["Jf"].cast<Mat>();s.fdot=ss["fdot"].cast<Vec>();s.feet=ss["feet"].cast<Vec>();}
       r.q=rr["q"].cast<Vec>();r.v=rr["v"].cast<Vec>();r.a=rr["a"].cast<Vec>();r.tau=rr["tau"].cast<Vec>();r.force=rr["force"].cast<Vec>();
       r.bp=rr["base_pose"].cast<Mat>();r.bv=rr["base_twist"].cast<Vec>();r.ba=rr["base_acc"].cast<Vec>();r.ep=rr["ee_pose"].cast<Mat>();r.ev=rr["ee_twist"].cast<Vec>();r.ea=rr["ee_acc"].cast<Vec>();
-      if(rr.contains("mode")){r.mode=rr["mode"].cast<Vec>();r.fp=rr["fp"].cast<Vec>();r.fv=rr["fv"].cast<Vec>();r.fa=rr["fa"].cast<Vec>();}if(rr.contains("fnmin")){r.fnmin=rr["fnmin"].cast<Vec>();r.fnmax=rr["fnmax"].cast<Vec>();}
       WResult o;{py::gil_scoped_release release;o=w.control(s,r);}
       py::dict d;d["tau"]=o.tau;d["acc"]=o.acc;d["force"]=o.force;d["wrench"]=o.wrench;
       d["bound"]=o.bound;d["lock"]=o.lock;d["kkt"]=o.kkt;d["dynamics"]=o.dynamics;d["contact"]=o.contact;d["interface"]=o.interface;

@@ -5,11 +5,8 @@
 struct WState {
   Vec q,v,h,cdot,ce,jdot,qmin,qmax,vmax,taumax;
   Mat M,Jc,J,pose;
-  Mat Jf;Vec fdot,feet;
 };
-struct WReference {Vec q,v,a,tau,force,bv,ba,ev,ea;Mat bp,ep;
-  Vec mode=Vec::Ones(4),fp=Vec::Zero(12),fv=Vec::Zero(12),fa=Vec::Zero(12),fnmin=Vec::Constant(4,10.),fnmax=Vec::Constant(4,800.);
-};
+struct WReference {Vec q,v,a,tau,force,bv,ba,ev,ea;Mat bp,ep;};
 struct WTask {Mat C;Vec d;};
 struct WResult {
   Vec tau,acc,force,wrench;Mat G;Vec lo,hi;std::vector<WTask> tasks;

@@ -16,16 +16,13 @@ class ControlRuntime {
   std::shared_ptr<const RuntimePolicy> pending,active;
   std::vector<RuntimeRow> rows;std::string failure;
   long rejected=0,overwritten=0,accepted=0;
-  Vec legs;double legtime=0;double elapsed=0;Mat gait;
+  Vec legs;double legtime=0;double elapsed=0;
   static pinocchio::SE3 pose(const Vec&q){return pinocchio::SE3(Eigen::Quaterniond(q[6],q[3],q[4],q[5]).toRotationMatrix(),q.head<3>());}
   WState evaluate(const Vec&q,const Vec&v){
     plant.robot.q=q;plant.robot.v=v;auto s=plant.robot.snapshot();auto&m=plant.model;auto&d=*plant.d;
     pinocchio::computeJointJacobians(m,d,q);pinocchio::forwardKinematics(m,d,q,v,Vec::Zero(24));pinocchio::updateFramePlacements(m,d);
     auto id=m.getFrameId("tool_tip");Mat J=Mat::Zero(6,24);pinocchio::getFrameJacobian(m,d,id,pinocchio::LOCAL,J);
-    WState state={q,v,s.h,s.contact_drift,s.contact_error,pinocchio::getFrameAcceleration(m,d,id,pinocchio::LOCAL).toVector(),m.lowerPositionLimit.tail(18),m.upperPositionLimit.tail(18),s.velocity_limit,s.torque_limit,s.M,s.Jfeet,J,d.oMf[id].toHomogeneousMatrix()};
-    state.Jf=Mat::Zero(12,24);state.fdot=Vec::Zero(12);state.feet=Vec::Zero(12);
-    const char* names[]={"FL_foot","FR_foot","RL_foot","RR_foot"};
-    for(int i=0;i<4;++i){auto fi=m.getFrameId(names[i]);Mat j=Mat::Zero(6,24);pinocchio::getFrameJacobian(m,d,fi,pinocchio::LOCAL_WORLD_ALIGNED,j);state.Jf.middleRows(3*i,3)=j.topRows(3);state.fdot.segment(3*i,3)=pinocchio::getFrameClassicalAcceleration(m,d,fi,pinocchio::LOCAL_WORLD_ALIGNED).linear();state.feet.segment(3*i,3)=d.oMf[fi].translation();}return state;
+    return {q,v,s.h,s.contact_drift,s.contact_error,pinocchio::getFrameAcceleration(m,d,id,pinocchio::LOCAL).toVector(),m.lowerPositionLimit.tail(18),m.upperPositionLimit.tail(18),s.velocity_limit,s.torque_limit,s.M,s.Jfeet,J,d.oMf[id].toHomogeneousMatrix()};
   }
   std::pair<Mat,Vec> contact(const Vec&q,const Vec&v){
     auto&m=plant.model;auto&d=*plant.d;pinocchio::computeJointJacobians(m,d,q);pinocchio::forwardKinematics(m,d,q,v,Vec::Zero(24));pinocchio::updateFramePlacements(m,d);
@@ -41,11 +38,6 @@ class ControlRuntime {
   }
   Vec legVelocity(double t,const Vec&l){auto s=raw(*active,t,false);s[0].segment(7,12)=l;auto c=contact(s[0],Vec::Zero(24));return c.first.block(0,6,12,12).partialPivLu().solve(-c.first.leftCols(6)*s[1].head(6));}
   WReference reference(double t){
-    if(gait.rows()){
-      auto st=raw(*active,t);auto s=evaluate(st[0],st[1]);int k=std::clamp(int((t-active->t)/active->dt),0,9);
-      WReference r={st[0],st[1],st[2],active->tau.row(k).transpose(),active->force.row(k).transpose(),st[1].head(6),st[2].head(6),s.J*st[1],s.J*st[2]+s.jdot,pose(st[0]).toHomogeneousMatrix(),s.pose};
-      Vec g=gait.row(std::min(int(std::lround(t/.0025)),int(gait.rows()-1))).transpose();r.mode=g.head(4);r.fp=g.segment(4,12);r.fv=g.segment(16,12);r.fa=g.segment(28,12);r.fnmin=g.segment(40,4);r.fnmax=g.tail(4);return r;
-    }
     while(legtime<t-1e-10){double h=std::min(.005,t-legtime);Vec k1=legVelocity(legtime,legs),k2=legVelocity(legtime+h/2,legs+h*k1/2),k3=legVelocity(legtime+h/2,legs+h*k2/2),k4=legVelocity(legtime+h,legs+h*k3);legs+=h*(k1+2*k2+2*k3+k4)/6;legtime+=h;}
     auto st=raw(*active,t);st[0].segment(7,12)=legs;auto c=contact(st[0],Vec::Zero(24));st[1].segment(6,12)=c.first.block(0,6,12,12).partialPivLu().solve(-c.first.leftCols(6)*st[1].head(6));c=contact(st[0],st[1]);st[2].segment(6,12)=c.first.block(0,6,12,12).partialPivLu().solve(-c.second-c.first.leftCols(6)*st[2].head(6));
     auto s=evaluate(st[0],st[1]);int k=std::clamp(int((t-active->t)/active->dt),0,9);
@@ -81,7 +73,6 @@ class ControlRuntime {
     plant.set_timestep(.0005);plant.instrument=true;plant.instrument_base=true;auto o=std::make_shared<RuntimeObservation>();o->q=plant.robot.q;o->v=plant.robot.v;o->tau=previous;o->acc=Vec::Zero(24);latest=o;
   }
   ~ControlRuntime(){stop=true;if(thread.joinable())thread.join();}
-  void setGait(const Mat&g){if(thread.joinable()||g.cols()!=48||g.rows()<2||!g.allFinite())throw std::runtime_error("Invalid gait table");for(int i=0;i<g.rows();++i){if((g.row(i).head(4).array()<0).any()||(g.row(i).head(4).array()>1).any()||g.row(i).head(4).sum()<2)throw std::runtime_error("Invalid gait contacts");}gait=g;}
   void publish(long sequence,double time,double step,const Mat&q0,const Mat&c,const Mat&tau,const Mat&force){
     if(q0.rows()!=10||q0.cols()!=25||c.rows()!=60||c.cols()!=24||tau.rows()!=10||tau.cols()!=18||force.rows()!=10||force.cols()!=12||std::abs(step-.04)>1e-10||!std::isfinite(time)||!q0.allFinite()||!c.allFinite()||!tau.allFinite()||!force.allFinite())throw std::runtime_error("Invalid policy packet");
     auto p=std::make_shared<RuntimePolicy>(RuntimePolicy{sequence,time,step,q0,c,tau,force});std::lock_guard<std::mutex> lock(policy_mutex);overwritten+=bool(pending);pending=p;
