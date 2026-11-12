@@ -1,3 +1,28 @@
+# Downloaded dependencies, toolchains and experiment outputs
+/third_party/
+/toolchains/
+/results/
+/archive/
+/relu_hgmpc/deps/
+/paper_repro/generated/
+# Generated build/cache files at any depth
 build/
-third_party/
+build_*/
 __pycache__/
+.pytest_cache/
+.venv/
+*.py[cod]
+*.so
+*.so.*
+*.o
+*.a
+*.whl
+*.egg-info/
+*.log
+*.bak
+*.npz
+*.npy
+*.csv
+# Local-only migration staging
+.source_only_stage.git/
+.source_only_old_git/

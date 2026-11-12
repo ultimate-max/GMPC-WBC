@@ -1,0 +1,50 @@
+{
+  "repositories": [
+    {
+      "path": "third_party/DWMPC",
+      "url": "https://github.com/iit-DLSLab/DWMPC.git",
+      "commit": "2a7d15a72554c73421f6369613e3f66c08d6ca77",
+      "submodules": "-04c91bf221b32050050052b9a749e6835f8b64f4 third_party/acados"
+    },
+    {
+      "path": "third_party/acados",
+      "url": "https://github.com/acados/acados.git",
+      "commit": "51db6db146217e6624d7575f34e0421f28bc76a0",
+      "submodules": "c95aa6fd2d1ae4ee202dbafe935d8987aa62b73c examples/acados_python/tests/test_data (heads/master)\n c73eb64352f17fc18bc10fe3c082fcbf9a3c0487 external/Clarabel.cpp (c73eb64)\n 25540f559592068d0c8a80e46ded1b21760212a1 external/Clarabel.cpp/Clarabel.rs (25540f5)\n 0a3df8683c6bf9d98168d616e0c5d05938c9d51c external/blasfeo (0a3df86)\n f3da715b4a4d075ea2f03b5908b360c64bff8cb0 external/catch (f3da715)\n be00dabaa822b0aa784f9f708b546bc85fc870d0 external/daqp (be00dab)\n bad1123a96136fce3cdd8bbcbe24b853d012b840 external/hpipm (bad1123)\n da0f9791034cb09bb0904d73504e948d8ea4d0a5 external/hpmpc (da0f979)\n 288dc922ab94bec42405541e7f50036d9716c5d7 external/jsonlab (288dc92)\n 236713ce9a56c182ac3230d52108f952afce1523 external/osqp (236713c)\n 4f5bdb4ff19a4a2896abe5bfd8fbde5710f34950 external/qpdunes (heads/master)\n 125e94fa638f00350608871fc165789b1d1762f1 external/qpoases (heads/master)\n a480a64b0a2cc15d4b1e6146e986388709ac0716 interfaces/acados_template/tera_renderer (v0.2.1)"
+    },
+    {
+      "path": "third_party/osqp",
+      "url": "https://github.com/osqp/osqp.git",
+      "commit": "236713ce9a56c182ac3230d52108f952afce1523",
+      "submodules": ""
+    },
+    {
+      "path": "third_party/osqp_core_cuda100",
+      "url": "https://github.com/osqp/osqp.git",
+      "commit": "236713ce9a56c182ac3230d52108f952afce1523",
+      "submodules": "",
+      "local_patch": "relu_hgmpc/cuda_fp64_precision.patch",
+      "local_patch_sha256": "2e603b9f54ec44959d6cd676a2f719c160bce99b031c1386805b55e2d4cdba6b"
+    },
+    {
+      "path": "third_party/osqp_python_cuda113",
+      "url": "https://github.com/osqp/osqp-python.git",
+      "commit": "dcc6384845e27b275fc41b2106dd2c379d5d5db4",
+      "submodules": ""
+    },
+    {
+      "path": "third_party/unitree_ros",
+      "url": "https://github.com/unitreerobotics/unitree_ros.git",
+      "commit": "725b59b6de39a26c425632120c89f23c49a36f1e",
+      "submodules": "-b989870124913091fbe75e0dcfb047eb4ca00a09 unitree_ros_to_real"
+    }
+  ],
+  "python_environment": [
+    "environment.yml",
+    "environment-linux-64.lock",
+    "pip-freeze.txt"
+  ],
+  "removed_local_toolchain": "toolchains/cuda121",
+  "reference_project": "/home/ganhe/project/legged_control_ros2",
+  "git_origin": "git@github.com:ultimate-max/GMPC-WBC.git"
+}
